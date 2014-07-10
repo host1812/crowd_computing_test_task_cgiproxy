@@ -33,11 +33,13 @@ end
 # execute 'install_lzma' do
 #     command "perl -MCPAN -e 'install IO::Compress::Lzma'"
 # end
-bash "install_something" do
+
+bash "install_lzma_from_cpan" do
     user "root"
     cwd "/tmp"
     code "echo 'yes' | perl -MCPAN -e 'install IO::Compress::Lzma'"
 end
+
 # cpan_client 'Compress::Raw::Lzma' do
 #     action 'install'
 #     install_type 'cpan_module'
@@ -75,6 +77,15 @@ nginx_fastcgi '/etc/nginx/sites-available/default' do
             :ssl_file => "#{cert.cert_path}",
             :ssl_key => "#{cert.key_path}",
             :location => '/proxy'
+            # :redirect => 'https'
+        }
+    ]
+    simple_servers [
+        {
+            :port => '80',
+            :server_name => "#{node['hostname']}",
+            :location => '/',
+            :redirect => 'https://$server_name/proxy'
         }
     ]
 end

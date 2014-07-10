@@ -19,6 +19,20 @@ define :nginx_fastcgi, :servers => [], :root => nil, :static => [], :fastcgi_par
         s[:static] ||= []
     end
 
+    params[:simple_servers].each do |s|
+        s[:server_alias] ||= []
+        s[:ssl] ||= false
+        s[:port] ||= (s[:ssl] == true ? 443 : 80)
+        s[:location] ||= '/'
+
+        if s[:server_name].nil? || s[:server_name].empty?
+            message = 'you should setup server_name for your virtual host. '
+            message << "virtual host string passed : #{s.inspect}"
+            raise message
+        end
+        s[:static] ||= []
+    end
+
     template params[:name] do
         source 'nginx-site.erb'
         notifies :restart, "service[nginx]", :immediately
@@ -29,8 +43,9 @@ define :nginx_fastcgi, :servers => [], :root => nil, :static => [], :fastcgi_par
             :socket => params[:socket],
             :inet_socket => params[:inet_socket],
             :servers => params[:servers],
-		:ssl_key => params[:ssl_key],
-		:ssl_file => params[:ssl_file],
+            :simple_servers => params[:simple_servers],
+    		:ssl_key => params[:ssl_key],
+    		:ssl_file => params[:ssl_file],
             :fastcgi_param => params[:fastcgi_param],
             :site_name => File.basename(params[:name]).chomp(File.extname(params[:name])),
             :error_page => params[:error_page],

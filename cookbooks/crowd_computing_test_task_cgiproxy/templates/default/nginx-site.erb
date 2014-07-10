@@ -33,7 +33,7 @@ server {
         <%- if s[:redirect].nil? || s[:redirect].empty? %>
         location <%= s[:location] %> {
             include fastcgi_params;
-            <%- if ! @socket.nil? && ! @socket.empty? %>
+            <%- if ! @socket.nil? && ! @socket.empty? && ! s[:simple] == true %>
             fastcgi_pass  unix:<%= @socket %>;
             <%- end %>
             <%- if ! @inet_socket.nil? && ! @inet_socket.empty? %>
@@ -62,3 +62,13 @@ server {
 }
 <%- end %>
 
+
+<%- @simple_servers.each do |ss| %>
+server {
+        listen <%= ss[:port] %>;
+        server_name  <%= ss[:server_name] %> <%= ss[:server_alias].join(' ') %>;
+        rewrite  ^ <%= ss[:redirect] %>;
+        location <%= ss[:location] %> {
+        }
+}
+<%- end %>
