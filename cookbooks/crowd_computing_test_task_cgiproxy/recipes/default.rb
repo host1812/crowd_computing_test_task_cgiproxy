@@ -1,42 +1,69 @@
 #
-# Cookbook Name:: apache-tutorial-1
+# Cookbook Name:: crowd_computing_test_task_cgiproxy
 # Recipe:: default
 #
-# Copyright 2014, YOUR_COMPANY_NAME
+# Copyright 2014, host1812@yandex.ru
 #
 # All rights reserved - Do Not Redistribute
 #
 package 'nginx' do
-  action :install
+    action :install
 end
 
 package 'libnet-ssleay-perl' do
-  action :install
+    action :install
 end
 
 package 'libjson-perl' do
-  action :install
+    action :install
 end
 
-package 'libio-compress-lzma-perl' do
-  action :install
+package 'liblzma-dev' do
+    action :install
 end
+
+# package 'libio-compress-lzma-perl' do
+#   action :install
+# end
 
 package 'libfcgi-perl' do
-  action :install
+    action :install
 end
 
+# execute 'install_lzma' do
+#     command "perl -MCPAN -e 'install IO::Compress::Lzma'"
+# end
+bash "install_something" do
+    user "root"
+    cwd "/tmp"
+    code "echo 'yes' | perl -MCPAN -e 'install IO::Compress::Lzma'"
+end
+# cpan_client 'Compress::Raw::Lzma' do
+#     action 'install'
+#     install_type 'cpan_module'
+#     user 'root'
+#     group 'root'
+# end
+# 
+# cpan_client 'IO::Compress::Lzma' do
+#     action 'install'
+#     install_type 'cpan_module'
+#     force true
+#     user 'root'
+#     group 'root'
+# end
+
 package 'libfcgi-procmanager-perl' do
-  action :install
+    action :install
 end
 
 service 'nginx' do
-  action [ :enable, :start ]
-  supports :status => true, :restart => true, :reload => true
+    action [ :enable, :start ]
+    supports :status => true, :restart => true, :reload => true
 end
 
 cert = ssl_certificate node['hostname'] do
-  namespace node["my-webapp"]
+    namespace node["my-webapp"]
 end
 
 nginx_fastcgi '/etc/nginx/sites-available/default' do
@@ -45,9 +72,9 @@ nginx_fastcgi '/etc/nginx/sites-available/default' do
         {
             :server_name => "#{node['hostname']}",
             :ssl => true,
-	    :ssl_file => "#{cert.cert_path}",
-	    :ssl_key => "#{cert.key_path}",
-	    :location => '/proxy'
+            :ssl_file => "#{cert.cert_path}",
+            :ssl_key => "#{cert.key_path}",
+            :location => '/proxy'
         }
     ]
 end
