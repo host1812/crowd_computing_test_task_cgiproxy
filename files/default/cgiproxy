@@ -1,0 +1,59 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+
+# /etc/init.d/rsync: start and stop the rsync daemon
+
+
+DAEMON=/opt/cgiproxy/nph-proxy.cgi
+DAEMON_OPTS=" start-fcgi" 
+NAME="cgiproxy"
+PID_FILE=/var/run/cgiproxy.pid
+
+. /lib/lsb/init-functions
+
+start_proxy() {
+    if [ -r $PID_FILE ] ; then
+        echo "Already Running"
+    else
+        start-stop-daemon --start --quiet --background \
+            --pidfile $PID_FILE --make-pidfile --exec $DAEMON -- $DAEMON_OPTS
+        echo "Started"
+    fi
+}
+
+stop_proxy() {
+    # start-stop-daemon --stop --quiet --pidfile $PID_FILE --retry=TERM/90/KILL/5
+    # do not like this but looks safe. Also 'start-stop-daemon' is working but too taking more than 60secs :(
+    if [ -r $PID_FILE ] ; then
+        pkill -KILL -P `cat $PID_FILE`
+        kill -KILL `cat $PID_FILE`
+        rm $PID_FILE
+        
+    else
+        echo "Already Stopped"
+    fi
+}
+
+show_proxy_status() {
+    status_of_proc -p $PID_FILE "$DAEMON" "$NAME" && exit 0 || exit $?
+}
+case "$1" in
+    start)
+        start_proxy
+        ;;
+    stop)
+        stop_proxy
+        ;;
+    restart)
+        stop_proxy
+        start_proxy
+        ;;
+    status)
+        show_proxy_status
+        ;;
+    *)
+        echo "Usage: /etc/init.d/cgiproxy {start|stop|restart|status}"
+        exit 1
+esac
+
