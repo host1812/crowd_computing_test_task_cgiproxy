@@ -1,0 +1,25 @@
+set daemon <%= @polling_interval %>
+set logfile /var/log/monit.log
+set idfile /var/lib/monit/id
+set statefile /var/lib/monit/state
+
+set eventqueue
+    basedir /var/lib/monit/events # set the base directory where events will be stored
+    slots 100
+
+set httpd port <%= @port %>
+    <%- if @restrict_to_ip == true %> use address <%= @host_ip %> <%- end %>
+    allow 0.0.0.0/0.0.0.0
+    allow admin:monit      # require user 'admin' with password 'monit'
+    allow @monit           # allow users of group 'monit' to connect (rw)
+    allow @users readonly
+
+<%- @processes.each do |p| %>
+check process <%= p[:name] %> with pidfile <%= p[:pid_file] %>
+    start program = "<%= p[:start_command] %>" with timeout 60 seconds
+    stop program  = "<%= p[:stop_command] %>"
+    <%- if p[:check_http_port] == true %>if failed port 80 then restart<%- end %>
+    <%- if p[:check_https_port] == true %>if failed port 443 with timeout 15 seconds then restart<%- end %>
+<%- end %>
+
+include /etc/monit/conf.d/*

@@ -10,6 +10,10 @@ package 'nginx' do
     action :install
 end
 
+package 'monit' do
+    action :install
+end
+
 package 'libnet-ssleay-perl' do
     action :install
 end
@@ -107,6 +111,34 @@ end
 service 'cgiproxy' do
   action [ :enable, :start ]
   supports :status => true, :restart => true
+end
+
+service 'monit' do
+  action [ :enable, :start ]
+  supports :status => true, :restart => true, :reload => true
+end
+
+template '/etc/monit/monitrc' do
+    source 'monit-config.erb'
+    variables ({
+        :port => '2812',
+        :polling_interval => '10',
+        :host_ip => node[:fqdn],
+        processes: [{
+            :name => 'nginx',
+            :pid_file => '/var/run/nginx.pid',
+            :start_command => '/etc/init.d/nginx start',
+            :stop_command => '/etc/init.d/nginx stop',
+            :check_http_port => true,
+            :check_https_port => true
+        },{
+            :name => 'perl-fcgi-pm',
+            :pid_file => '/var/run/cgiproxy.pid',
+            :start_command => '/etc/init.d/cgiproxy start',
+            :stop_command => '/etc/init.d/cgiproxy stop'
+        }]
+    })
+	notifies :reload, "service[monit]", :immediately
 end
 
 # log "WebApp1 certificate is here: #{cert.cert_path}"
