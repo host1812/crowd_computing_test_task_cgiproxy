@@ -73,8 +73,8 @@ First one. That I actually implemented here
 Use as less dependancies as possible. That means that I have only base resource and providers.
 
 Why I decided to go with this approach:
-1. No expierence. So I simply do not trust anybody but myself
-2. I do not know environment where cookbook will be deployed. It could be restrictions on using third-party cookbooks
++ No expierence. So I simply do not trust anybody but myself
++ I do not know environment where cookbook will be deployed. It could be restrictions on using third-party cookbooks
 
 Now, when my expierence increased I could try 'Second' alternate approach.
 This approach will utilize as mush cookbooks provided by community as possible. I can see only one big advantage of this - Do not Repeat Yourself. Also because contributers spending more time on their cookbooks, potencially they have less bugs in them.
