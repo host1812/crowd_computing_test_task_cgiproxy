@@ -1,4 +1,4 @@
-apache-tutorial-1 Cookbook
+crowd_computing_test_task_cgiproxy Cookbook
 ==========================
 TODO: Enter the cookbook description here.
 
@@ -11,14 +11,14 @@ TODO: List your cookbook requirements. Be sure to include any requirements this 
 
 e.g.
 #### packages
-- `toaster` - apache-tutorial-1 needs toaster to brown your bagel.
+- `toaster` - crowd_computing_test_task_cgiproxy needs toaster to brown your bagel.
 
 Attributes
 ----------
 TODO: List your cookbook attributes here.
 
 e.g.
-#### apache-tutorial-1::default
+#### crowd_computing_test_task_cgiproxy::default
 <table>
   <tr>
     <th>Key</th>
@@ -27,7 +27,7 @@ e.g.
     <th>Default</th>
   </tr>
   <tr>
-    <td><tt>['apache-tutorial-1']['bacon']</tt></td>
+    <td><tt>['crowd_computing_test_task_cgiproxy']['bacon']</tt></td>
     <td>Boolean</td>
     <td>whether to include bacon</td>
     <td><tt>true</tt></td>
@@ -36,17 +36,17 @@ e.g.
 
 Usage
 -----
-#### apache-tutorial-1::default
+#### crowd_computing_test_task_cgiproxy::default
 TODO: Write usage instructions for each cookbook.
 
 e.g.
-Just include `apache-tutorial-1` in your node's `run_list`:
+Just include `crowd_computing_test_task_cgiproxy` in your node's `run_list`:
 
 ```json
 {
   "name":"my_node",
   "run_list": [
-    "recipe[apache-tutorial-1]"
+    "recipe[crowd_computing_test_task_cgiproxy]"
   ]
 }
 ```
