@@ -20,9 +20,9 @@ User: admin
 Password: monit
 
 What monit is monitoring:
-+ *'nginx' service.* Will restart 'nginx' if 80 or 443 ports are failed or no '/var/run/nginx.pid' file is presend
-+ *'perl-fcgi-pm' file (cgiproxy service).* Will restart 'cgiproxy' if no '/var/run/cgiproxy.pid' file is presend
-+ *'perl-fcgi' files count.* Will execute 'killall -2 perl-fcgi' if more then 30 processes detected. By default I configured 'cgiproxy' to         handle only 20 child processes.
++ **'nginx' service.** Will restart 'nginx' if 80 or 443 ports are failed or no '/var/run/nginx.pid' file is presend
++ **'perl-fcgi-pm' file (cgiproxy service).** Will restart 'cgiproxy' if no '/var/run/cgiproxy.pid' file is presend
++ **'perl-fcgi' files count.** Will execute 'killall -2 perl-fcgi' if more then 30 processes detected. By default I configured 'cgiproxy' to         handle only 20 child processes.
 
 
 'cgiproxy' deployed in '/opt/cgiproxy' directory. This perl script is customized and that is why it included in cookbook.
