@@ -5,7 +5,7 @@ When this cookbook applied on the node you actually will get the following:
  - cgiproxy with fast_cgi thru socket file as service
  - monit to monitor both 'nginx' and 'cgiproxy' as service
 
-When the cookbook applied on the node you willbe able navigate to 'https://NODEFQDN/proxy' and use you new proxy service without any restrictions.
+When the cookbook applied on the node you will be able navigate to 'https://NODEFQDN/proxy' and use you new proxy service without any restrictions.
 
 Implementation
 --------------
