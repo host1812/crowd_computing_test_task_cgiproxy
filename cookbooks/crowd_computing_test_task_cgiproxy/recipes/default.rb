@@ -95,19 +95,19 @@ directory '/opt/cgiproxy' do
 end
 
 cookbook_file '/opt/cgiproxy/nph-proxy.cgi' do
-	source "nph-proxy.cgi"
-	mode 0755
+    source "nph-proxy.cgi"
+    mode 0755
 end
 
 cookbook_file '/opt/cgiproxy/perlmon' do
-	source "perlmon"
-	mode 0755
+    source "perlmon"
+    mode 0755
 end
 
 cookbook_file '/etc/init.d/cgiproxy' do
-	source "cgiproxy"
-	mode 0755
-	notifies :restart, "service[cgiproxy]", :immediately
+    source "cgiproxy"
+    mode 0755
+    notifies :restart, "service[cgiproxy]", :immediately
 end
 
 service 'cgiproxy' do
@@ -140,7 +140,7 @@ template '/etc/monit/monitrc' do
             :stop_command => '/etc/init.d/cgiproxy stop'
         }]
     })
-	notifies :reload, "service[monit]", :immediately
+    notifies :reload, "service[monit]", :immediately
 end
 
 # log "WebApp1 certificate is here: #{cert.cert_path}"

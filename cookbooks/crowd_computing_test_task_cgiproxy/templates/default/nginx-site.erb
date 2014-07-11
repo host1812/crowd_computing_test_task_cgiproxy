@@ -13,8 +13,8 @@ server {
         listen <%= "#{s[:ip]}:#{s[:port]}" %>;
             <%- end %>
         <%- end %>
-	ssl_certificate      <%= s[:ssl_file]; %>;
-    	ssl_certificate_key  <%= s[:ssl_key]; %>;
+        ssl_certificate      <%= s[:ssl_file]; %>;
+        ssl_certificate_key  <%= s[:ssl_key]; %>;
         server_name  <%= s[:server_name] %> <%= s[:server_alias].join(' ') %>;
         <%- unless  @root.nil? || @root.empty? %>
         root <%= @root %>;
