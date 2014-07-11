@@ -70,27 +70,73 @@ cert = ssl_certificate node['hostname'] do
     namespace node["my-webapp"]
 end
 
-nginx_fastcgi '/etc/nginx/sites-available/default' do
-    socket '/tmp/cgiproxy.fcgi.socket'
-    servers [
+template '/etc/nginx/sites-available/default' do
+    source 'nginx-config.erb'
+    variables ({
+        servers: [{
+            :name => "#{node['hostname']}",
+            :port => "80",
+            :access_log => "/var/log/nginx/default.access.log",
+            :error_log => "/var/log/nginx/default.error.log",
+            locations: [
+                {
+                    :name => "/",
+                    :redirect => true,
+                    :redirect_rule => "return 302 https://$host/proxy"
+                },
+                {
+                    :name => "/proxy",
+                    :rewrite => true,
+                    :rewrite_rule => "rewrite ^(.*) https://$host$request_uri"
+                }
+            ]
+        },
         {
-            :server_name => "#{node['hostname']}",
+            :name => "#{node['hostname']}",
+            :port => "443",
             :ssl => true,
             :ssl_file => "#{cert.cert_path}",
             :ssl_key => "#{cert.key_path}",
-            :location => '/proxy'
+            :access_log => "/var/log/nginx/default.access.log",
+            :error_log => "/var/log/nginx/default.error.log",
+            locations: [
+                {
+                    :name => "/",
+                    :redirect => true,
+                    :redirect_rule => "return 302 https://$host/proxy"
+                },
+                {
+                    :name => "/proxy",
+                    :fast_cgi => true,
+                    :fast_cgi_pass => "unix:/tmp/cgiproxy.fcgi.socket"
+                }
+            ]
         }
-    ]
-    simple_servers [
-        {
-            :port => '80',
-            :server_name => "#{node['hostname']}",
-            :location => '/',
-            # :redirect => 'https://$request_uri/proxy'
-            :redirect => 'rewrite ^(.*) https://$host/proxy'
-        }
-    ]
+    ]})
+    notifies :reload, "service[nginx]", :immediately
 end
+
+# nginx_fastcgi '/etc/nginx/sites-available/default' do
+#     socket '/tmp/cgiproxy.fcgi.socket'
+#     servers [
+#         {
+#             :server_name => "#{node['hostname']}",
+#             :ssl => true,
+#             :ssl_file => "#{cert.cert_path}",
+#             :ssl_key => "#{cert.key_path}",
+#             :location => '/proxy'
+#         }
+#     ]
+#     simple_servers [
+#         {
+#             :port => '80',
+#             :server_name => "#{node['hostname']}",
+#             locations: [{:name => '/test1'},{:name => 'test2'}],
+#             # :redirect => 'https://$request_uri/proxy'
+#             :redirect => 'rewrite ^(.*) https://$host/proxy'
+#         }
+#     ]
+# end
 
 directory '/opt/cgiproxy' do
 end

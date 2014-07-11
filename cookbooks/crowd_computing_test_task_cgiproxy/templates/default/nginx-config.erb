@@ -1,0 +1,32 @@
+<%- @servers.each do |s| %>
+server {
+        listen <%= s[:port] %><%- if s[:ssl] == true %> ssl<%- end %>;
+        server_name  <%= s[:name] %>;
+        <%- if s[:ssl] == true %>
+        ssl_certificate      <%= s[:ssl_file]; %>;
+        ssl_certificate_key  <%= s[:ssl_key]; %>;
+        <%- end %>
+
+        <%- s[:locations].each do |loc| %>
+        location <%= loc[:name] %> {
+            <%- if loc[:redirect] == true %>
+                <%= loc[:redirect_rule] %>;
+            <%- end %>
+            <%- if loc[:rewrite] == true %>
+                <%= loc[:rewrite_rule] %>;
+            <%- end %>
+
+            <%- if loc[:fast_cgi] == true %>
+                fastcgi_pass <%= loc[:fast_cgi_pass] %>;
+                include fastcgi_params;
+                <%- if s[:ssl] == true %>
+                fastcgi_param  HTTPS on;
+                <%- end %>
+            <%- end %>
+        }
+        <%- end %>
+
+        access_log <%= s[:access_log]; %>;
+        error_log  <%= s[:error_log]; %>;
+}
+<%- end %>
