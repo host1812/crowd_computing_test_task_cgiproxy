@@ -171,7 +171,7 @@ template '/etc/monit/monitrc' do
     source 'monit-config.erb'
     variables ({
         :port => '2812',
-        :polling_interval => '10',
+        :polling_interval => '60',
         :host_ip => node[:fqdn],
         processes: [{
             :name => 'nginx',
