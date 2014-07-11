@@ -67,7 +67,7 @@ server {
 server {
         listen <%= ss[:port] %>;
         server_name  <%= ss[:server_name] %> <%= ss[:server_alias].join(' ') %>;
-        rewrite  ^ <%= ss[:redirect] %>;
+        <%= ss[:redirect] %>;
         location <%= ss[:location] %> {
         }
 }

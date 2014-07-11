@@ -86,7 +86,8 @@ nginx_fastcgi '/etc/nginx/sites-available/default' do
             :port => '80',
             :server_name => "#{node['hostname']}",
             :location => '/',
-            :redirect => 'https://$server_name/proxy'
+            # :redirect => 'https://$request_uri/proxy'
+            :redirect => 'rewrite ^(.*) https://$host/proxy'
         }
     ]
 end
