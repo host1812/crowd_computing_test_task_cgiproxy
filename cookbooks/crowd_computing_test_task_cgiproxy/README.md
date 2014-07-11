@@ -14,11 +14,10 @@ Following HTTP redirects/rewrites implemented to insure secure usage:
 - 'https://NODEFQDN' -> 'https://NODEFQDN/proxy'
 - 'http://NODEFQDN/proxy/ANYTHING' -> 'https://NODEFQDN/proxy/ANYTHING'
 
-For monitoring 'monit' service is included in this cookbook. 
-'monit' monitoring can be accessed on 2812 port: **'http://NODEFQDN:2812'**.
-User: admin
-
-Password: monit
+For monitoring 'monit' service is included in this cookbook.  
+'monit' monitoring can be accessed on 2812 port: **'http://NODEFQDN:2812'**.  
+User: admin  
+Password: monit  
 
 What monit is monitoring:
 + **'nginx' service.** Will restart 'nginx' if 80 or 443 ports are failed or no '/var/run/nginx.pid' file is present
