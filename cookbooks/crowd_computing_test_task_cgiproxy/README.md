@@ -15,9 +15,9 @@ Following HTTP redirects/rewrites implemented to insure secure usage:
 - 'http://NODEFQDN/proxy/ANYTHING' -> 'https://NODEFQDN/proxy/ANYTHING'
 
 For monitoring 'monit' service is included in this cookbook. 
-'monit' monitoring can be accessed on 2812 port: 'http://NODEFQDN:2812'.
-User: admin
-Password: monit
+'monit' monitoring can be accessed on 2812 port: **'http://NODEFQDN:2812'**.
+######User: admin
+######Password: monit
 
 What monit is monitoring:
 + **'nginx' service.** Will restart 'nginx' if 80 or 443 ports are failed or no '/var/run/nginx.pid' file is present
@@ -69,12 +69,12 @@ My Thoughts
 This cookbook is implemented to cover custom 'test task' requirements.
 I know at least two ways how this task could be done.
 
-First one. That I actually implemented here
-Use as little dependancies as possible. That means that I have only base resource and providers.
+First one. That I actually implemented here. Use as little dependancies as possible. That means that I have only base resource and providers.
 
 Why I decided to go with this approach:
 + No experience. So I simply do not trust anybody but myself
 + I do not know environment where cookbook will be deployed. There could be restrictions on using third-party cookbooks
+
 
 Now, when my experience increased, I could try 'Second' alternate approach.
 This approach will utilize as many cookbooks provided by community as possible. I can see only one big advantage of this - Do not Repeat Yourself. Also because contributers spend more time on their cookbooks, potencially they have less bugs in them.
