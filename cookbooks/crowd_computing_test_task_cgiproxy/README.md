@@ -10,9 +10,9 @@ When the cookbook applied on the node you willbe able navigate to 'https://NODEF
 Implementation
 --------------
 Following HTTP redirects/rewrites implemented to insure secure usage:
-'http://NODEFQDN' -> 'https://NODEFQDN/proxy'
-'https://NODEFQDN' -> 'https://NODEFQDN/proxy'
-'http://NODEFQDN/proxy/ANYTHING' -> 'https://NODEFQDN/proxy/ANYTHING'
+- 'http://NODEFQDN' -> 'https://NODEFQDN/proxy'
+- 'https://NODEFQDN' -> 'https://NODEFQDN/proxy'
+- 'http://NODEFQDN/proxy/ANYTHING' -> 'https://NODEFQDN/proxy/ANYTHING'
 
 For monitoring 'monit' service is included in this cookbook. 
 'monit' monitoring can be access on 2812 port: 'http://NODEFQDN:2812'.
@@ -36,10 +36,10 @@ Structure
 ---------
 Solution consists of the following files:
 
-./files/default/cgiproxy
+###./files/default/cgiproxy
 This is startup script for 'cgiproxy' service. Placed in '/etc/init.d'. Following commands implemented: 'start','stop','restart','status'.
 
-./files/default/nph-proxy.cgi
+###./files/default/nph-proxy.cgi
 This is core of the solution. This is customized perl script that do all the work.
 Following is changed:
 - HTTPS support enabled
@@ -48,20 +48,20 @@ Following is changed:
 - Javascript executions prevented
 This perl script placed in '/opt/cgiproxy' directory. Not sure if this is best approach, but I like when all custom soft not provided from repositories are stored in '/opt' directory
     
-./files/default/perlmon
+###./files/default/perlmon
 This is tiny helper script to get count of 'perl-fcgi' processes on the server. I configured 'monit' to monit this number. In some cases I expireneced strange behavior when not all 'perl-fcgi' processes correctly removed.
     
-./libraries/provider_ssl_certificate.rb
-./libraries/provider_ssl_certificate.rb
+###./libraries/provider_ssl_certificate.rb
+###./libraries/provider_ssl_certificate.rb
 This is only one 'third-party' implementation I used to generate and manage SSL self-signed certificates.
     
-./recipes/defaul.rb
-Recipe file that is doing all deployment work. PLEASE BE AWARE! I've been asked to deploy all dependancies as packages. This is working file on ubuntu_14.04 but not on ubuntu_12.04 or debian_7. Package in question is 'libio-compress-lzma-perl' which is not presented on mantioned systems. That is why recipe will beploy       this perl module using 'cpan' utility if no 'libio-compress-lzma-perl' is presented in repositories.
+###./recipes/defaul.rb
+Recipe file that is doing all deployment work. PLEASE BE AWARE! I've been asked to deploy all dependancies as packages. This is working file on ubuntu_14.04 but not on ubuntu_12.04 or debian_7. Package in question is 'libio-compress-lzma-perl' which is not presented on mantioned systems. That is why recipe will beploy this perl module using 'cpan' utility if no 'libio-compress-lzma-perl' is presented in repositories.
 
-./templates/default/monit-config.erb
+###./templates/default/monit-config.erb
 My custom 'monit' template.
 
-./templates/default/nginx-config.erb
+###./templates/default/nginx-config.erb
 My custom 'nginx' config file template. Decided to write my own template for better customizations.
 
 My Thoughts
