@@ -1,68 +1,80 @@
-crowd_computing_test_task_cgiproxy Cookbook
+crowd_computing_test_task_cgiproxy
 ==========================
-TODO: Enter the cookbook description here.
+When this cookbook applied on the node you actually will get the following:
+ - nginx http server as service
+ - cgiproxy with fast_cgi thru socket file as service
+ - monit to monitor both 'nginx' and 'cgiproxy' as service
 
-e.g.
-This cookbook makes your favorite breakfast sandwich.
+When the cookbook applied on the node you willbe able navigate to 'https://NODEFQDN/proxy' and use you new proxy service without any restrictions.
 
-Requirements
-------------
-TODO: List your cookbook requirements. Be sure to include any requirements this cookbook has on platforms, libraries, other cookbooks, packages, operating systems, etc.
+Implementation
+--------------
+Following HTTP redirects/rewrites implemented to insure secure usage:
+'http://NODEFQDN' -> 'https://NODEFQDN/proxy'
+'https://NODEFQDN' -> 'https://NODEFQDN/proxy'
+'http://NODEFQDN/proxy/ANYTHING' -> 'https://NODEFQDN/proxy/ANYTHING'
 
-e.g.
-#### packages
-- `toaster` - crowd_computing_test_task_cgiproxy needs toaster to brown your bagel.
+For monitoring 'monit' service is included in this cookbook. 
+'monit' monitoring can be access on 2812 port: 'http://NODEFQDN:2812'.
+User: admin
+Password: monit
 
-Attributes
-----------
-TODO: List your cookbook attributes here.
+What monit is monitoring:
+1. 'nginx' service. Will restart 'nginx' if 80 or 443 ports are failed or no '/var/run/nginx.pid' file is presend
+2. 'perl-fcgi-pm' file (cgiproxy service). Will restart 'cgiproxy' if no '/var/run/cgiproxy.pid' file is presend
+3. 'perl-fcgi' files count. Will execute 'killall -2 perl-fcgi' if more then 30 processes detected. By default I configured 'cgiproxy' to         handle only 20 child processes.
 
-e.g.
-#### crowd_computing_test_task_cgiproxy::default
-<table>
-  <tr>
-    <th>Key</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  <tr>
-    <td><tt>['crowd_computing_test_task_cgiproxy']['bacon']</tt></td>
-    <td>Boolean</td>
-    <td>whether to include bacon</td>
-    <td><tt>true</tt></td>
-  </tr>
-</table>
 
-Usage
------
-#### crowd_computing_test_task_cgiproxy::default
-TODO: Write usage instructions for each cookbook.
+'cgiproxy' deployed in '/opt/cgiproxy' directory. This perl script is customized and that is why it included in cookbook.
+What is implemented:
+- HTTPS support enabled
+- Number of childs reduced to '20'
+- X-Frame-Options header is ommited for all responces
+- Javascript executions prevented
 
-e.g.
-Just include `crowd_computing_test_task_cgiproxy` in your node's `run_list`:
+Structure
+---------
+Solution consists of the following files:
 
-```json
-{
-  "name":"my_node",
-  "run_list": [
-    "recipe[crowd_computing_test_task_cgiproxy]"
-  ]
-}
-```
+./files/default/cgiproxy
+This is startup script for 'cgiproxy' service. Placed in '/etc/init.d'. Following commands implemented: 'start','stop','restart','status'.
 
-Contributing
-------------
-TODO: (optional) If this is a public cookbook, detail the process for contributing. If this is a private cookbook, remove this section.
+./files/default/nph-proxy.cgi
+This is core of the solution. This is customized perl script that do all the work.
+Following is changed:
+- HTTPS support enabled
+- Number of childs reduced to '20'
+- X-Frame-Options header is ommited for all responces
+- Javascript executions prevented
+This perl script placed in '/opt/cgiproxy' directory. Not sure if this is best approach, but I like when all custom soft not provided from repositories are stored in '/opt' directory
+    
+./files/default/perlmon
+This is tiny helper script to get count of 'perl-fcgi' processes on the server. I configured 'monit' to monit this number. In some cases I expireneced strange behavior when not all 'perl-fcgi' processes correctly removed.
+    
+./libraries/provider_ssl_certificate.rb
+./libraries/provider_ssl_certificate.rb
+This is only one 'third-party' implementation I used to generate and manage SSL self-signed certificates.
+    
+./recipes/defaul.rb
+Recipe file that is doing all deployment work. PLEASE BE AWARE! I've been asked to deploy all dependancies as packages. This is working file on ubuntu_14.04 but not on ubuntu_12.04 or debian_7. Package in question is 'libio-compress-lzma-perl' which is not presented on mantioned systems. That is why recipe will beploy       this perl module using 'cpan' utility if no 'libio-compress-lzma-perl' is presented in repositories.
 
-e.g.
-1. Fork the repository on Github
-2. Create a named feature branch (like `add_component_x`)
-3. Write your change
-4. Write tests for your change (if applicable)
-5. Run the tests, ensuring they all pass
-6. Submit a Pull Request using Github
+./templates/default/monit-config.erb
+My custom 'monit' template.
 
-License and Authors
--------------------
-Authors: TODO: List authors
+./templates/default/nginx-config.erb
+My custom 'nginx' config file template. Decided to write my own template for better customizations.
+
+My Thoughts
+-----------
+This cookbook implemented to cover custom 'test task' requerements.
+I know at least two ways how this task could be done.
+
+First one. That I actually implemented here
+Use as less dependancies as possible. That means that I have only base resource and providers.
+
+Why I decided to go with this approach:
+1. No expierence. So I simply do not trust anybody but myself
+2. I do not know environment where cookbook will be deployed. It could be restrictions on using third-party cookbooks
+
+Now, when my expierence increased I could try 'Second' alternate approach.
+This approach will utilize as mush cookbooks provided by community as possible. I can see only one big advantage of this - Do not Repeat Yourself. Also because contributers spending more time on their cookbooks, potencially they have less bugs in them.
