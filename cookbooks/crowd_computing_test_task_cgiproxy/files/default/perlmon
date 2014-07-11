@@ -1,0 +1,3 @@
+#!/bin/sh
+PERL_FCGI_PROCESS_COUNT=`ps -ef | grep perl-fcgi | grep -v perlmon | grep -v grep | wc -l`
+exit $PERL_FCGI_PROCESS_COUNT

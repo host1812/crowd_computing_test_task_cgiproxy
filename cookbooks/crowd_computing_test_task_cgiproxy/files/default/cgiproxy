@@ -14,7 +14,17 @@ PID_FILE=/var/run/cgiproxy.pid
 
 start_proxy() {
     if [ -r $PID_FILE ] ; then
-        echo "Already Running"
+        PID=`cat $PID_FILE`
+        echo "Should be running with pid '${PID}'"
+        CHILDS_COUNT=`pgrep -P ${PID} | wc -l`
+        echo "Childs count: ${CHILDS_COUNT}"
+        if [ "$CHILDS_COUNT" -eq 0 ] ; then
+            echo 'No child processes discovered. Something strange is happening'
+            echo 'Cleaning pid file and restarting this service...'
+            rm $PID_FILE -f
+            stop_proxy
+            start_proxy
+        fi
     else
         start-stop-daemon --start --quiet --background \
             --pidfile $PID_FILE --make-pidfile --exec $DAEMON -- $DAEMON_OPTS
@@ -26,10 +36,15 @@ stop_proxy() {
     # start-stop-daemon --stop --quiet --pidfile $PID_FILE --retry=TERM/90/KILL/5
     # do not like this but looks safe. Also 'start-stop-daemon' is working but too taking more than 60secs :(
     if [ -r $PID_FILE ] ; then
+        PID=`cat $PID_FILE`
+        CHILDS_PIDS=`pgrep -P ${PID}`
+        for CPID in $CHILDS_PIDS
+        do
+            kill -2 $CPID
+        done
         pkill -KILL -P `cat $PID_FILE`
         kill -KILL `cat $PID_FILE`
         rm $PID_FILE
-        
     else
         echo "Already Stopped"
     fi

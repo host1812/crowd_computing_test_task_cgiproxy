@@ -22,4 +22,7 @@ check process <%= p[:name] %> with pidfile <%= p[:pid_file] %>
     <%- if p[:check_https_port] == true %>if failed port 443 with timeout 15 seconds then restart<%- end %>
 <%- end %>
 
+check program perl_fcgi_count with path "/opt/cgiproxy/perlmon"
+    if status > 30 with timeout 30 seconds then exec "/usr/bin/killall -2 perl-fcgi"
+
 include /etc/monit/conf.d/*

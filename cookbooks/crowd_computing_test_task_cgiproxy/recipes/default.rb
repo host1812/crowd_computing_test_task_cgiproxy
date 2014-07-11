@@ -26,21 +26,19 @@ package 'liblzma-dev' do
     action :install
 end
 
-# package 'libio-compress-lzma-perl' do
-#   action :install
-# end
+package 'libio-compress-lzma-perl' do
+  action :install
+  ignore_failure true
+end
 
 package 'libfcgi-perl' do
     action :install
 end
 
-# execute 'install_lzma' do
-#     command "perl -MCPAN -e 'install IO::Compress::Lzma'"
-# end
-
 bash "install_lzma_from_cpan" do
-    user "root"
-    cwd "/tmp"
+    not_if "dpkg-query -W 'libio-compress-lzma-perl'"
+    # user "root"
+    # cwd "/tmp"
     code "echo 'yes' | perl -MCPAN -e 'install IO::Compress::Lzma'"
 end
 
@@ -81,7 +79,6 @@ nginx_fastcgi '/etc/nginx/sites-available/default' do
             :ssl_file => "#{cert.cert_path}",
             :ssl_key => "#{cert.key_path}",
             :location => '/proxy'
-            # :redirect => 'https'
         }
     ]
     simple_servers [
@@ -99,6 +96,11 @@ end
 
 cookbook_file '/opt/cgiproxy/nph-proxy.cgi' do
 	source "nph-proxy.cgi"
+	mode 0755
+end
+
+cookbook_file '/opt/cgiproxy/perlmon' do
+	source "perlmon"
 	mode 0755
 end
 
